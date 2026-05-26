@@ -1,0 +1,26 @@
+name: AppSec Pilot Scan
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  appsec-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: |
+          uv venv
+          uv pip install -e agent -e backend -e cli
+          cd frontend && npm ci
+      - name: Tests
+        run: |
+          cd backend && uv run pytest
+          cd ../agent && uv run pytest
+          cd ../cli && uv run pytest
+          cd ../frontend && npm run build

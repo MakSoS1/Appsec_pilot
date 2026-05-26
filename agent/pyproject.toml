@@ -1,0 +1,19 @@
+[project]
+name = "appsec-pilot-agent"
+version = "0.1.0"
+description = "Agent, policy, mapper, and verifier for AppSec Pilot"
+requires-python = ">=3.12"
+dependencies = ["httpx>=0.27.0", "pydantic>=2.8.2", "pyyaml>=6.0.2"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3.2", "ruff>=0.6.2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["appsec_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

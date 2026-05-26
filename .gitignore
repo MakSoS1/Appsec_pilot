@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Local runtime
+.env
+*.db
+*.sqlite
+appsec_runs/
+reports/generated/
+artifacts/
+research_references/
+.DS_Store
+
+# Docker
+.docker/

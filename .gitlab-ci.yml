@@ -1,0 +1,24 @@
+stages:
+  - test
+  - appsec
+
+tests:
+  stage: test
+  image: python:3.12
+  script:
+    - pip install uv
+    - uv venv
+    - uv pip install -e agent -e backend -e cli
+    - cd backend && uv run pytest
+    - cd ../agent && uv run pytest
+    - cd ../cli && uv run pytest
+
+appsec_pilot_scan:
+  stage: appsec
+  image: python:3.12
+  script:
+    - echo "Run appsec scan --target . --scope appsec.scope.yaml --profile safe-active --wait --fail-on critical in deployed CI environments."
+  artifacts:
+    when: always
+    paths:
+      - appsec_runs/

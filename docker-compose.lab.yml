@@ -1,0 +1,26 @@
+services:
+  juice-shop:
+    image: bkimminich/juice-shop:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - appsec_lab
+
+  webgoat:
+    image: webgoat/webgoat:latest
+    ports:
+      - "8081:8080"
+    networks:
+      - appsec_lab
+
+  fastapi-vuln:
+    build:
+      context: ./benchmarks/custom_vuln_apps/fastapi_vuln
+    ports:
+      - "8008:8000"
+    networks:
+      - appsec_lab
+
+networks:
+  appsec_lab:
+    driver: bridge
