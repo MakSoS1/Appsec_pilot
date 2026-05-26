@@ -1,0 +1,133 @@
+specification {
+  element person
+  element system
+  element container
+  element component
+  element storage
+
+  relationship uses
+  relationship calls
+  relationship stores
+  relationship publishes
+}
+
+model {
+  user = person "Security Engineer" {
+    description "Runs authorized scans, reviews findings, exports reports"
+  }
+
+  ci = system "CI/CD" {
+    description "GitHub Actions, GitLab CI, and local quality gates"
+  }
+
+  appsec = system "AppSec Pilot" {
+    description "Self-hosted AppSec validation platform"
+
+    frontend = container "React UI" {
+      technology "Vite, TanStack Router, React Query"
+      description "Projects, target wizard, scan timeline, endpoint graph, findings, settings, audit log"
+    }
+
+    cli = container "CLI" {
+      technology "Typer"
+      description "appsec scan/status/findings/report/ci"
+    }
+
+    api = container "Backend API" {
+      technology "FastAPI, Pydantic, SQLAlchemy"
+      description "Auth, projects, targets, scans, findings, evidence, reports, settings"
+
+      auth = component "Auth/RBAC"
+      scanService = component "Scan Service"
+      reportService = component "Report Service"
+      audit = component "Audit Log"
+    }
+
+    agent = container "Agent Runtime" {
+      technology "Python async orchestrator"
+      description "Scope policy, endpoint mapping, prompt library, tool registry, verifier, risk scorer"
+
+      mapper = component "Endpoint Mapper"
+      planner = component "Planner + Skills"
+      tools = component "Tool Adapters"
+      verifier = component "Verifier"
+      sandbox = component "Sandbox Policy"
+    }
+
+    worker = container "Worker" {
+      technology "Dramatiq-compatible background runner"
+      description "Executes scan lifecycle and artifact generation"
+    }
+
+    db = storage "PostgreSQL / SQLite" {
+      description "Projects, targets, scans, endpoints, findings, audit events"
+    }
+
+    artifacts = storage "Artifact Storage" {
+      technology "Filesystem or MinIO"
+      description "HTML/PDF reports and redacted evidence artifacts"
+    }
+
+    redis = storage "Redis" {
+      description "Queue/cache when compose stack is enabled"
+    }
+  }
+
+  model = system "Local Model Runtime" {
+    technology "Ollama OpenAI-compatible API"
+    description "Local Qwen-family model used for planning/summarization when enabled"
+  }
+
+  targets = system "Authorized Targets" {
+    description "Local URL, repository, archive, OpenAPI spec, or Docker lab"
+  }
+
+  tools = system "Security Tools" {
+    description "Semgrep, secret scan, AST map, HTTP probe, ZAP baseline, bounded browser checks"
+  }
+
+  user -> appsec.frontend "uses"
+  user -> appsec.cli "runs"
+  ci -> appsec.cli "calls"
+  appsec.frontend -> appsec.api "calls REST API"
+  appsec.cli -> appsec.api "calls REST API"
+  appsec.api -> appsec.db "stores metadata"
+  appsec.api -> appsec.artifacts "stores reports"
+  appsec.api -> appsec.worker "publishes scans"
+  appsec.worker -> appsec.agent "runs"
+  appsec.agent -> model "calls chat completions"
+  appsec.agent -> targets "validates in scope"
+  appsec.agent -> tools "calls adapters"
+  appsec.agent -> appsec.artifacts "stores evidence"
+  appsec.agent -> appsec.db "stores findings"
+  appsec.worker -> appsec.redis "uses queue when enabled"
+}
+
+views {
+  view index of appsec {
+    include *
+    autoLayout LeftRight
+  }
+
+  view runtime of appsec.agent {
+    include appsec.agent.*
+    include model
+    include targets
+    include tools
+    include appsec.db
+    include appsec.artifacts
+    autoLayout LeftRight
+  }
+
+  view delivery of appsec {
+    include user
+    include ci
+    include appsec.frontend
+    include appsec.cli
+    include appsec.api
+    include appsec.worker
+    include appsec.db
+    include appsec.artifacts
+    autoLayout LeftRight
+  }
+}

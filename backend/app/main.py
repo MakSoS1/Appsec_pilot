@@ -30,6 +30,7 @@ from app.schemas import (
 from app.security import create_access_token, get_current_user, require_role, verify_password
 from app.services import add_audit, create_report, run_scan
 from appsec_agent.llm.client import LLMClient
+from appsec_agent.tools.registry import tool_registry_payload
 from appsec_agent.sandbox.scope import ScopePolicy
 
 settings = get_settings()
@@ -470,7 +471,7 @@ def patch_policies(user: User = Depends(require_role("admin", "security_engineer
 
 @app.get("/api/settings/tools")
 def get_tools(user: User = Depends(get_current_user)) -> dict[str, Any]:
-    return {"tools": ["http_probe_adapter", "custom_checks_adapter", "semgrep_adapter", "zap_baseline_adapter", "playwright_adapter"], "mode": "safe-active"}
+    return tool_registry_payload(settings.default_scan_profile)
 
 
 @app.patch("/api/settings/tools")

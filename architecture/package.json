@@ -1,0 +1,13 @@
+{
+  "name": "appsec-pilot-architecture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "likec4 validate",
+    "build": "likec4 build --output dist",
+    "export:svg": "node scripts/export-likec4-svg.mjs"
+  },
+  "devDependencies": {
+    "likec4": "latest"
+  }
+}

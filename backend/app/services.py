@@ -21,6 +21,8 @@ from appsec_agent.llm.client import LLMClient
 from appsec_agent.orchestrator.planner import Planner
 from appsec_agent.orchestrator.verifier import deterministic_verify
 from appsec_agent.sandbox.scope import ScopePolicy
+from appsec_agent.skills.catalog import catalog_summary, relevant_skills
+from appsec_agent.tools.registry import tool_registry_payload
 
 SCAN_STEPS = [
     ("preparing_environment", "Scope and policy loaded"),
@@ -192,12 +194,20 @@ async def execute_scan(scan_id: str) -> None:
         )
     planner = Planner(llm)
     scope_raw = yaml.safe_load(target.scope_yaml if target else "") or {}
-    plan = await planner.plan(endpoints, scope_raw)
+    plan = await planner.plan(endpoints, scope_raw, scan.profile)
 
     with SessionLocal() as db:
         scan = db.get(ScanRun, scan_id)
-        append_event(db, scan, "building_context", "Loaded OWASP/CWE guidance and target metadata")
-        append_event(db, scan, "generating_hypotheses", f"Generated {len(plan.get('hypotheses', []))} policy-checked hypotheses")
+        skills = relevant_skills(endpoints, target_type=target.type if target else None, profile=scan.profile)
+        tools_payload = tool_registry_payload(scan.profile)
+        append_event(
+            db,
+            scan,
+            "building_context",
+            f"Loaded {len(skills)} skill cards and {len(tools_payload['enabled'])} enabled tool adapters",
+            {"skills": [skill.id for skill in skills], "tools": tools_payload["enabled"], "catalog": catalog_summary()["categories"]},
+        )
+        append_event(db, scan, "generating_hypotheses", f"Generated {len(plan.get('hypotheses', []))} policy-checked hypotheses", {"skills": plan.get("skills", [])})
 
     await asyncio.sleep(0.2)
     with SessionLocal() as db:

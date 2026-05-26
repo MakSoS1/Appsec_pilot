@@ -1,20 +1,32 @@
 # AppSec Pilot
 
-AppSec Pilot is a self-hosted AI AppSec platform for authorized security validation of web applications and APIs. It builds an endpoint map, plans safe checks with a local open-weight LLM, runs checks through a policy layer, verifies findings from evidence, and exports developer-ready reports.
+Self-hosted AI AppSec platform для авторизованной проверки web-приложений и API. Проект строит карту endpoint-ов, выбирает безопасные проверки через skill/tool registry, валидирует findings по evidence и выпускает отчеты для разработчиков и CI.
 
-## What Works in This MVP
+![AppSec Pilot overview](docs/assets/screenshots/overview.png)
 
-- FastAPI backend with JWT auth, projects, targets, scans, endpoints, findings, evidence, reports, settings, and audit logs.
-- Vite/TanStack React interface with dashboards, projects, target wizard, scan timeline, endpoint graph, findings, reports, model settings, and audit log.
-- Local model integration through OpenAI-compatible API, defaulting to Ollama at `http://localhost:11434/v1` and model tag `qwen35-hauhau-q4:latest`.
-- Endpoint mapping for OpenAPI, FastAPI, Flask, Express.js, and basic Django URL maps.
-- Scope validation with allowlisted hosts/ports/methods, blocked categories, request limits, and redaction settings.
-- Safe adapters for HTTP probes, custom auth/role/object checks, Semgrep, Playwright, and ZAP baseline extension points.
-- HTML and PDF reports with verifier decisions and evidence summaries.
-- CLI for local scans and CI exit codes.
-- Custom FastAPI lab app with seeded vulnerabilities for demo and tests.
+## Что реализовано
 
-## Quick Start on the Remote PC
+- FastAPI backend: JWT auth, RBAC, projects, targets, scans, endpoints, findings, evidence, reports, settings, audit log.
+- React UI на Vite/TanStack: dashboard, projects, target setup, scan timeline, endpoint graph, findings, reports, settings/model/tools, audit log.
+- Agent runtime: scope policy, endpoint mapper, prompt layer, skill catalog, tool registry, verifier, risk scorer, evidence redaction.
+- Endpoint mapping: OpenAPI, FastAPI, Flask, Express, basic Django URL maps.
+- Safe adapters: HTTP probe, auth/role/object diff, OpenAPI contract, Semgrep, secret scan, AST structural map, dependency inventory, ZAP baseline extension point, bounded browser checks.
+- CLI `appsec`: `init`, `scan`, `status`, `findings`, `report`, `ci` with CI exit codes.
+- Reports: HTML/PDF, reproduction summary, verifier decision, remediation, redacted evidence, CI decision.
+- Demo lab: custom vulnerable FastAPI app plus scope files for local labs.
+- Архитектура как код через LikeC4: `architecture/appsec-pilot.c4`.
+
+## Архитектура
+
+LikeC4 модель лежит в `architecture/appsec-pilot.c4`, статическая сборка — в `architecture/dist`, экспортированные схемы — в `docs/assets/architecture`.
+
+![AppSec Pilot architecture](docs/assets/architecture/appsec-pilot-system.png)
+
+Runtime agent view:
+
+![Agent runtime architecture](docs/assets/architecture/appsec-pilot-runtime.png)
+
+## Быстрый запуск на удаленном ПК
 
 ```powershell
 cd C:\Users\maksi\Documents\work\appsec-pilot
@@ -22,70 +34,123 @@ uv venv .venv
 uv pip install -e agent -e backend -e cli
 cd frontend
 npm install
-cd ..
 ```
 
-Start the backend:
+Backend:
 
 ```powershell
-cd backend
-uv run uvicorn app.main:app --host 0.0.0.0 --port 8080
+cd C:\Users\maksi\Documents\work\appsec-pilot\backend
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8080
 ```
 
-Start the frontend in another terminal:
+Frontend:
 
 ```powershell
-cd frontend
+cd C:\Users\maksi\Documents\work\appsec-pilot\frontend
 npm run dev -- --host 0.0.0.0 --port 3001
 ```
 
-Open `http://10.78.211.199:3001` or `http://localhost:3001` on the remote PC.
+Открыть UI: `http://10.78.211.199:3001`.
 
-Default login:
+Demo login:
 
 ```text
 admin@appsec.local
 AppSecPilot123!
 ```
 
-## Local Model
+## Local model runtime
 
-The backend expects an OpenAI-compatible chat endpoint. For the current GPU host the default is:
+Backend ожидает OpenAI-compatible chat API. Для текущей машины настройки по умолчанию:
 
 ```env
+LLM_PROVIDER=openai_compatible
 LLM_BASE_URL=http://localhost:11434/v1
 LLM_MODEL=qwen35-hauhau-q4:latest
 LLM_API_KEY=local-dev-key
+USE_LLM_PLANNER=false
 ```
 
-The agent treats the model as a planner and summarizer only. Every tool action is still checked by scope policy, adapter policy, audit logging, evidence redaction, and verifier logic.
+Модель используется как planner/summarizer, но действия не выполняются напрямую из model output. Все проверки проходят через scope policy, tool registry, audit log, redaction и verifier. По умолчанию включен deterministic planner, чтобы MVP стабильно работал даже если локальная модель отвечает слишком многословно.
 
-## Demo Flow
+## Основной demo flow
 
-1. Log in to AppSec Pilot.
-2. Open Projects and choose `FastAPI Lab Demo`.
-3. Use Target Wizard to review the local target and scope.
-4. Start a `safe-active` scan.
-5. Watch the scan timeline move through mapping, planning, checks, verification, and reporting.
-6. Open Findings and inspect evidence and remediation.
-7. Download HTML/PDF reports.
-8. Run the CLI CI gate:
+1. Войти в UI.
+2. Открыть **Projects** и выбрать `FastAPI Lab Demo`.
+3. Проверить target и scope.
+4. Запустить scan в профиле `safe-active`.
+5. Открыть scan detail и проверить timeline, endpoint graph и findings.
+6. Открыть finding detail, evidence и remediation.
+7. Скачать HTML/PDF report.
+8. Проверить CI gate через CLI.
+
+![Scan detail](docs/assets/screenshots/scan-detail.png)
+
+![Finding detail](docs/assets/screenshots/finding-detail.png)
+
+## CLI
 
 ```powershell
 appsec scan --api-url http://localhost:8080 --base-url http://localhost:8008 --scope benchmarks/custom_vuln_apps/fastapi_vuln/scope.yaml --wait --fail-on high
 ```
 
-## Docker
+Exit codes:
 
-When Docker Desktop is running:
+- `0`: scan completed and policy gate passed;
+- `1`: findings reached `--fail-on` threshold;
+- `2`: scan failed;
+- `3`: API/auth/config error;
+- `4`: timeout;
+- `5`: invalid CLI usage or unsupported mode.
+
+## Tool registry и prompts
+
+Prompt layer, skill catalog и tool registry описаны в коде:
+
+- `agent/appsec_agent/llm/prompts.py`;
+- `agent/appsec_agent/skills/catalog.py`;
+- `agent/appsec_agent/tools/registry.py`.
+
+В UI это видно на Settings screen:
+
+![Tool registry settings](docs/assets/screenshots/settings.png)
+
+## Документация на русском
+
+- [Архитектура](docs/ru/architecture.md)
+- [Руководство пользователя](docs/ru/user_guide.md)
+- [Руководство оператора](docs/ru/operator_guide.md)
+- [Модель безопасности](docs/ru/security_model.md)
+- [Инструменты, навыки и prompt layer](docs/ru/tools_and_prompts.md)
+- [Скриншоты интерфейса](docs/ru/screenshots.md)
+
+## Проверки
+
+```powershell
+cd C:\Users\maksi\Documents\work\appsec-pilot
+.\.venv\Scripts\python.exe -m pytest agent backend cli -q
+.\.venv\Scripts\python.exe -m ruff check agent backend cli
+cd frontend
+npm run build
+npm run lint
+cd ..\architecture
+npm run validate
+npm run build
+```
+
+UI screenshots обновляются headless Edge, без Playwright.
+
+## Docker и lab режим
+
+Когда Docker Desktop доступен:
 
 ```powershell
 docker compose up -d --build
 docker compose -f docker-compose.lab.yml up -d
 ```
 
-The lab compose includes Juice Shop, WebGoat, and the custom FastAPI vulnerable app.
+Lab compose включает custom FastAPI vulnerable app и scope-файлы для внешних учебных targets. Если Docker daemon не запущен из SSH-сессии, backend/frontend/CLI остаются рабочими в local dev режиме, а lab compose нужно запускать после старта Docker Desktop.
 
-## Safety Position
+## Safety
 
-AppSec Pilot is designed for authorized local labs, staging systems, and CI environments. It blocks public-target behavior by default, requires scope files, denies cloud metadata hosts, redacts evidence, and records every scan action in the audit log.
+AppSec Pilot рассчитан на authorized security validation. Scope file обязателен, public targets отключены по умолчанию, destructive checks не подключены, evidence редактируется, все scan events пишутся в audit log.
