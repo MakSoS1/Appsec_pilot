@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Download, RefreshCw, XCircle } from "lucide-react";
 import { AppLayout } from "@/components/app-layout";
 import { Button, Card, PageHeader, SectionTitle, SeverityBadge } from "@/components/ui-kit";
-import { API_URL, api, Endpoint, Finding, ScanRun } from "@/lib/api";
+import { api, Endpoint, Finding, ScanRun, scanLogsUrl } from "@/lib/api";
 import { useAsyncData } from "@/lib/use-api";
 
 export const Route = createFileRoute("/scans/$id")({ component: ScanDetail });
@@ -54,7 +54,7 @@ function ScanDetail() {
               <SectionTitle
                 title="Live event log"
                 action={
-                  <a className="text-xs text-primary" href={`${API_URL}/api/scans/${id}/logs`}>
+                  <a className="text-xs text-primary" href={scanLogsUrl(id)}>
                     <Download className="mr-1 inline h-3 w-3" />
                     Logs
                   </a>

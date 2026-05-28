@@ -1,4 +1,7 @@
+import { mockLogin, mockRequest } from "./mock-api";
+
 export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
+export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 export type Project = {
   id: string;
@@ -117,6 +120,11 @@ export function token() {
 }
 
 export async function login(email = "admin@appsec.local", password = "AppSecPilot123!") {
+  if (DEMO_MODE) {
+    const data = await mockLogin(email, password);
+    window.localStorage.setItem("appsec_token", data.access_token);
+    return data;
+  }
   const response = await fetch(`${API_URL}/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -129,6 +137,9 @@ export async function login(email = "admin@appsec.local", password = "AppSecPilo
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  if (DEMO_MODE) {
+    return mockRequest<T>(path, init);
+  }
   const headers = new Headers(init.headers);
   headers.set("Content-Type", headers.get("Content-Type") ?? "application/json");
   const t = token();
@@ -157,6 +168,26 @@ export const api = {
   delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
 };
 
+export function evidenceDownloadUrl(evidenceId: string) {
+  if (DEMO_MODE) {
+    return `data:text/plain;charset=utf-8,Demo%20evidence%20artifact%20for%20${encodeURIComponent(evidenceId)}`;
+  }
+  return `${API_URL}/api/evidence/${evidenceId}/download`;
+}
+
+export function scanLogsUrl(scanId: string) {
+  if (DEMO_MODE) {
+    return `data:text/plain;charset=utf-8,Demo%20scan%20log%20for%20${encodeURIComponent(scanId)}`;
+  }
+  return `${API_URL}/api/scans/${scanId}/logs`;
+}
+
 export function reportDownloadUrl(reportId: string, format: "html" | "pdf") {
+  if (DEMO_MODE) {
+    if (format === "html") {
+      return "data:text/html;charset=utf-8,%3Ch1%3EDemo%20Report%3C/h1%3E%3Cp%3EStatic%20GitHub%20Pages%20mode.%20Real%20artifacts%20are%20shown%20in%20live%20demo.%3C/p%3E";
+    }
+    return "data:text/plain;charset=utf-8,Demo%20PDF%20placeholder.%20Use%20live%20demo%20for%20real%20export.";
+  }
   return `${API_URL}/api/reports/${reportId}/download.${format}`;
 }

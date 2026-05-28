@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, Download, RefreshCw, ShieldCheck, XCircle } from "lucide-react";
 import { AppLayout } from "@/components/app-layout";
 import { Button, Card, SeverityBadge } from "@/components/ui-kit";
-import { API_URL, api, Evidence, Finding } from "@/lib/api";
+import { api, Evidence, Finding, evidenceDownloadUrl } from "@/lib/api";
 import { useAsyncData } from "@/lib/use-api";
 
 export const Route = createFileRoute("/findings/$id")({ component: FindingDetail });
@@ -113,10 +113,7 @@ function FindingDetail() {
                     <div key={ev.id} className="rounded-md border border-border p-3">
                       <div className="flex items-center justify-between">
                         <div className="text-sm font-semibold">{ev.title}</div>
-                        <a
-                          href={`${API_URL}/api/evidence/${ev.id}/download`}
-                          className="text-xs text-primary"
-                        >
+                        <a href={evidenceDownloadUrl(ev.id)} className="text-xs text-primary">
                           <Download className="mr-1 inline h-3 w-3" />
                           Download
                         </a>

@@ -124,6 +124,23 @@ Prompt layer, skill catalog и tool registry описаны в коде:
 - [Инструменты, навыки и prompt layer](docs/ru/tools_and_prompts.md)
 - [Скриншоты интерфейса](docs/ru/screenshots.md)
 
+## GitHub Pages (frontend demo для жюри)
+
+Для жюри деплоится тот же `frontend`, но в `demo mode`:
+
+- без подключения к backend и локальной модели;
+- данные подаются из встроенного mock API;
+- маршруты и экраны совпадают с основным интерфейсом.
+
+Автодеплой настроен через `.github/workflows/pages.yml`, сборка идет из `frontend/dist/client`.
+
+Публичный URL:
+
+- `https://maksos1.github.io/Appsec_pilot/`
+
+Если GitHub Pages еще не включены:
+`Settings -> Pages -> Source: GitHub Actions`.
+
 ## Проверки
 
 ```powershell
