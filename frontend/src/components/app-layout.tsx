@@ -17,14 +17,14 @@ import {
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/", label: "Overview", icon: LayoutDashboard },
-  { to: "/projects", label: "Projects", icon: FolderKanban },
-  { to: "/assets", label: "Assets", icon: Database },
-  { to: "/findings", label: "Findings", icon: Bug },
-  { to: "/runs", label: "Runs", icon: PlayCircle },
-  { to: "/reports", label: "Reports", icon: FileText },
-  { to: "/audit-logs", label: "Audit", icon: ScrollText },
-  { to: "/settings", label: "Settings", icon: Settings },
+  { to: "/", label: "Обзор", icon: LayoutDashboard },
+  { to: "/projects", label: "Проекты", icon: FolderKanban },
+  { to: "/assets", label: "Активы", icon: Database },
+  { to: "/findings", label: "Находки", icon: Bug },
+  { to: "/runs", label: "Запуски", icon: PlayCircle },
+  { to: "/reports", label: "Отчеты", icon: FileText },
+  { to: "/audit-logs", label: "Аудит", icon: ScrollText },
+  { to: "/settings", label: "Настройки", icon: Settings },
 ] as const;
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -39,7 +39,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="leading-tight">
             <div className="text-sm font-semibold text-sidebar-foreground">AppSec Pilot</div>
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              AI AppSec Platform
+              Локальная AppSec платформа
             </div>
           </div>
         </div>
@@ -68,11 +68,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-sidebar-foreground/80 hover:bg-sidebar-accent"
           >
             <LogIn className="h-4 w-4" />
-            Login
+            Вход
           </Link>
           <div className="mt-3 px-3">
             <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Workspace
+              Рабочая среда
             </div>
             <button className="mt-1 flex w-full items-center justify-between rounded-md border border-sidebar-border bg-surface px-3 py-2 text-sm">
               <span className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="relative max-w-md flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              placeholder="Search findings, endpoints, runs"
+              placeholder="Поиск: находки, endpoint'ы, сканы"
               className="h-9 w-full rounded-md border border-input bg-background pl-9 pr-14 text-sm outline-none focus:border-ring focus:ring-2 focus:ring-ring/20"
             />
             <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">
@@ -110,8 +110,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 AP
               </div>
               <div className="hidden text-right leading-tight md:block">
-                <div className="text-sm font-medium">AppSec Admin</div>
-                <div className="text-[11px] text-muted-foreground">Security Team</div>
+                <div className="text-sm font-medium">Администратор</div>
+                <div className="text-[11px] text-muted-foreground">Команда безопасности</div>
               </div>
             </div>
           </div>

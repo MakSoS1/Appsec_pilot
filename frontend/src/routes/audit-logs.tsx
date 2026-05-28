@@ -12,8 +12,8 @@ function AuditLogs() {
   return (
     <AppLayout>
       <PageHeader
-        title="Audit Log"
-        description="Every user and agent action recorded for review."
+        title="Журнал аудита"
+        description="Все действия пользователя и агента для последующей проверки."
       />
       <Card className="p-0">
         <ul className="divide-y divide-border">
@@ -25,7 +25,7 @@ function AuditLogs() {
               <div>
                 <div className="text-sm font-semibold">{a.action}</div>
                 <div className="text-xs text-muted-foreground">
-                  {a.object_type} · {a.object_id ?? "system"} ·{" "}
+                  {a.object_type} · {a.object_id ?? "система"} ·{" "}
                   {new Date(a.created_at).toLocaleString()}
                 </div>
                 <pre className="mt-2 rounded-md bg-muted p-2 text-xs">

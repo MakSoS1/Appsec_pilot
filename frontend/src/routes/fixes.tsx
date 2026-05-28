@@ -7,10 +7,10 @@ import { findings } from "@/lib/mock-data";
 export const Route = createFileRoute("/fixes")({
   head: () => ({
     meta: [
-      { title: "Fixes — AppSec Pilot" },
+      { title: "Исправления — AppSec Pilot" },
       {
         name: "description",
-        content: "AI-suggested code fixes, draft pull requests and remediation guidance.",
+        content: "AI-предложения по исправлениям кода, draft PR и рекомендации по ремедиации.",
       },
     ],
   }),
@@ -25,8 +25,8 @@ function Fixes() {
   return (
     <AppLayout>
       <PageHeader
-        title="Fixes & Remediation"
-        description="Suggested patches your engineers can review, edit and ship."
+        title="Исправления и ремедиация"
+        description="Подготовленные патчи, которые команда может быстро проверить и внедрить."
       />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {fixable.map((f) => (
@@ -42,9 +42,9 @@ function Fixes() {
             </div>
             <div className="mb-3 flex items-center gap-2 text-xs">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
-              <span className="text-muted-foreground">Suggested by AppSec Pilot AI v2.1</span>
+              <span className="text-muted-foreground">Предложено AppSec Pilot AI v2.1</span>
               <span className="ml-auto rounded bg-success/10 px-2 py-0.5 font-medium text-success">
-                High confidence
+                Высокая уверенность
               </span>
             </div>
             <pre className="mb-3 overflow-x-auto rounded-md border border-border bg-muted/40 p-3 text-[11px] leading-relaxed">
@@ -56,14 +56,14 @@ function Fixes() {
             <div className="flex flex-wrap items-center gap-2">
               <Button variant="primary" size="sm">
                 <GitPullRequest className="h-3.5 w-3.5" />
-                Open draft PR
+                Открыть draft PR
               </Button>
               <Button variant="outline" size="sm">
                 <Wand2 className="h-3.5 w-3.5" />
-                Refine with AI
+                Уточнить с AI
               </Button>
               <Button variant="ghost" size="sm">
-                View finding <ExternalLink className="h-3.5 w-3.5" />
+                Открыть находку <ExternalLink className="h-3.5 w-3.5" />
               </Button>
             </div>
           </Card>

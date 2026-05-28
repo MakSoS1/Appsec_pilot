@@ -6,10 +6,10 @@ import { Card, PageHeader, Button } from "@/components/ui-kit";
 export const Route = createFileRoute("/integrations")({
   head: () => ({
     meta: [
-      { title: "Integrations — AppSec Pilot" },
+      { title: "Интеграции — AppSec Pilot" },
       {
         name: "description",
-        content: "Connect AppSec Pilot to source control, CI/CD, ticketing and chat.",
+        content: "Подключение AppSec Pilot к source control, CI/CD и каналам уведомлений.",
       },
     ],
   }),
@@ -19,37 +19,37 @@ export const Route = createFileRoute("/integrations")({
 const items = [
   {
     name: "GitHub",
-    desc: "Code scanning, PR comments, draft fix PRs.",
+    desc: "Сканирование кода, комментарии в PR, черновики исправлений.",
     icon: Github,
     connected: true,
   },
   {
     name: "Slack",
-    desc: "Realtime alerts when a critical PoC is validated.",
+    desc: "Мгновенные алерты при подтверждении критичных уязвимостей.",
     icon: Slack,
     connected: true,
   },
   {
     name: "Jira",
-    desc: "Auto-create tickets for findings in Fix now queue.",
+    desc: "Автосоздание задач по находкам из очереди срочных исправлений.",
     icon: Database,
     connected: false,
   },
   {
     name: "AWS",
-    desc: "Asset discovery for EC2, Lambda and API Gateway.",
+    desc: "Обнаружение активов EC2, Lambda и API Gateway.",
     icon: Cloud,
     connected: true,
   },
   {
     name: "Okta",
-    desc: "SSO and role mapping for AppSec Pilot users.",
+    desc: "SSO и сопоставление ролей для пользователей AppSec Pilot.",
     icon: Shield,
     connected: false,
   },
   {
-    name: "Email digests",
-    desc: "Daily executive summary by email.",
+    name: "Email-дайджесты",
+    desc: "Ежедневная сводка по сканам на email.",
     icon: Mail,
     connected: false,
   },
@@ -59,8 +59,8 @@ function Integrations() {
   return (
     <AppLayout>
       <PageHeader
-        title="Integrations"
-        description="Plug AppSec Pilot into your engineering workflow."
+        title="Интеграции"
+        description="Подключите AppSec Pilot к вашему инженерному процессу."
       />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {items.map((i) => (
@@ -74,7 +74,7 @@ function Integrations() {
                   <h3 className="text-sm font-semibold">{i.name}</h3>
                   {i.connected && (
                     <span className="inline-flex items-center gap-1 rounded bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
-                      <CheckCircle2 className="h-3 w-3" /> Connected
+                      <CheckCircle2 className="h-3 w-3" /> Подключено
                     </span>
                   )}
                 </div>
@@ -87,7 +87,7 @@ function Integrations() {
                 size="sm"
                 className="w-full justify-center"
               >
-                {i.connected ? "Manage" : "Connect"}
+                {i.connected ? "Управлять" : "Подключить"}
               </Button>
             </div>
           </Card>

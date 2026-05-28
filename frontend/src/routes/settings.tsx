@@ -30,33 +30,33 @@ function Settings() {
   return (
     <AppLayout>
       <PageHeader
-        title="Settings"
-        description="Model runtime, policy defaults, skill-driven tool registry."
+        title="Настройки"
+        description="Параметры модели, политики и реестр подключенных инструментов."
       />
       {data && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Card>
-              <SectionTitle title="Model" />
+              <SectionTitle title="Модель" />
               <Cpu className="mb-3 h-5 w-5 text-primary" />
               <div className="space-y-2 text-sm">
-                <Row k="Provider" v={data.model.llm_provider} />
+                <Row k="Провайдер" v={data.model.llm_provider} />
                 <Row k="Base URL" v={data.model.llm_base_url} />
-                <Row k="Model" v={data.model.llm_model} />
-                <Row k="Health" v={data.model.health?.ok ? "healthy" : "unavailable"} />
+                <Row k="Модель" v={data.model.llm_model} />
+                <Row k="Состояние" v={data.model.health?.ok ? "доступна" : "недоступна"} />
               </div>
             </Card>
             <Card>
-              <SectionTitle title="Policies" />
+              <SectionTitle title="Политики" />
               <ShieldCheck className="mb-3 h-5 w-5 text-success" />
               <div className="space-y-2 text-sm">
-                <Row k="Require scope" v={String(data.policies.require_scope_file)} />
-                <Row k="Public targets" v={String(data.policies.allow_public_targets)} />
-                <Row k="Default profile" v={data.policies.default_profile} />
+                <Row k="Scope обязателен" v={String(data.policies.require_scope_file)} />
+                <Row k="Публичные цели" v={String(data.policies.allow_public_targets)} />
+                <Row k="Профиль по умолчанию" v={data.policies.default_profile} />
               </div>
             </Card>
             <Card>
-              <SectionTitle title="Enabled tools" />
+              <SectionTitle title="Включенные инструменты" />
               <Wrench className="mb-3 h-5 w-5 text-info" />
               <div className="flex flex-wrap gap-2">
                 {data.tools.enabled.map((t: string) => (
@@ -68,7 +68,7 @@ function Settings() {
             </Card>
           </div>
           <Card>
-            <SectionTitle title="Tool registry" />
+            <SectionTitle title="Реестр инструментов" />
             <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
               {registry.map((tool) => (
                 <div key={tool.adapter} className="rounded-md border border-border p-3">
@@ -83,10 +83,10 @@ function Settings() {
                   <div className="mt-2 flex flex-wrap gap-2 text-xs">
                     <span className="rounded bg-muted px-2 py-1">{tool.category}</span>
                     <span className="rounded bg-muted px-2 py-1">
-                      {tool.enabled_by_default ? "default" : "optional"}
+                      {tool.enabled_by_default ? "по умолчанию" : "опционально"}
                     </span>
                     <span className="rounded bg-muted px-2 py-1">
-                      {tool.destructive ? "destructive" : "safe"}
+                      {tool.destructive ? "деструктивный" : "безопасный"}
                     </span>
                   </div>
                 </div>

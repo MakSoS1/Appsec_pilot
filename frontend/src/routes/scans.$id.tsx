@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Download, RefreshCw, XCircle } from "lucide-react";
 import { AppLayout } from "@/components/app-layout";
 import { Button, Card, PageHeader, SectionTitle, SeverityBadge } from "@/components/ui-kit";
@@ -31,20 +31,20 @@ function ScanDetail() {
       {data && (
         <>
           <PageHeader
-            title={`Scan ${data.scan.id}`}
+            title={`Скан ${data.scan.id}`}
             description={`${data.scan.status} · ${data.scan.profile} · ${data.scan.model_name}`}
             actions={
               <>
                 <Button variant="outline" onClick={() => void reload()}>
                   <RefreshCw className="h-4 w-4" />
-                  Refresh
+                  Обновить
                 </Button>
                 <Button variant="outline" onClick={() => void cancel()}>
                   <XCircle className="h-4 w-4" />
-                  Cancel
+                  Отменить
                 </Button>
                 <Button variant="primary" onClick={() => void rerun()}>
-                  Rerun
+                  Повторить
                 </Button>
               </>
             }
@@ -52,11 +52,11 @@ function ScanDetail() {
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
             <Card className="lg:col-span-7">
               <SectionTitle
-                title="Live event log"
+                title="Хронология этапов"
                 action={
                   <a className="text-xs text-primary" href={scanLogsUrl(id)}>
                     <Download className="mr-1 inline h-3 w-3" />
-                    Logs
+                    Логи
                   </a>
                 }
               />
@@ -74,8 +74,8 @@ function ScanDetail() {
             </Card>
             <Card className="lg:col-span-5">
               <SectionTitle
-                title="Endpoint graph"
-                subtitle={`${data.graph.nodes.length} nodes · ${data.graph.edges.length} edges`}
+                title="Граф endpoint'ов"
+                subtitle={`${data.graph.nodes.length} узлов · ${data.graph.edges.length} связей`}
               />
               <div className="grid grid-cols-1 gap-2">
                 {data.endpoints.map((e) => (
@@ -89,7 +89,7 @@ function ScanDetail() {
               </div>
             </Card>
             <Card className="lg:col-span-12">
-              <SectionTitle title="Findings" />
+              <SectionTitle title="Находки" />
               <div className="space-y-2">
                 {data.findings.map((f) => (
                   <div
@@ -97,7 +97,13 @@ function ScanDetail() {
                     className="flex items-center justify-between rounded-md border border-border p-3"
                   >
                     <div>
-                      <div className="text-sm font-semibold">{f.title}</div>
+                      <Link
+                        to="/findings/$id"
+                        params={{ id: f.id }}
+                        className="text-sm font-semibold text-primary hover:underline"
+                      >
+                        {f.title}
+                      </Link>
                       <div className="text-xs text-muted-foreground">
                         {f.status} · {f.endpoint?.method} {f.endpoint?.path}
                       </div>

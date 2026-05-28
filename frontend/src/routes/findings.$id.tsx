@@ -36,7 +36,7 @@ function FindingDetail() {
           <div className="mb-4 flex items-center gap-3 text-sm text-muted-foreground">
             <Link to="/findings" className="inline-flex items-center gap-1 hover:text-foreground">
               <ArrowLeft className="h-3.5 w-3.5" />
-              Findings
+              Находки
             </Link>
             <span>/</span>
             <span className="font-medium text-foreground">{f.id}</span>
@@ -51,61 +51,61 @@ function FindingDetail() {
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => void reverify()}>
                 <RefreshCw className="h-4 w-4" />
-                Reverify
+                Повторная верификация
               </Button>
               <Button variant="outline" onClick={() => void falsePositive()}>
                 <XCircle className="h-4 w-4" />
-                False positive
+                Ложноположительное
               </Button>
               <Button variant="primary" onClick={() => void acceptRisk()}>
                 <ShieldCheck className="h-4 w-4" />
-                Accept risk
+                Принять риск
               </Button>
             </div>
           </div>
           <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <Card className="p-4">
-              <div className="text-xs text-muted-foreground">Severity</div>
+              <div className="text-xs text-muted-foreground">Критичность</div>
               <div className="mt-2">
                 <SeverityBadge severity={f.severity} />
               </div>
             </Card>
             <Card className="p-4">
-              <div className="text-xs text-muted-foreground">Risk</div>
+              <div className="text-xs text-muted-foreground">Риск</div>
               <div className="mt-1 text-2xl font-semibold">{f.risk_score}</div>
             </Card>
             <Card className="p-4">
-              <div className="text-xs text-muted-foreground">Status</div>
+              <div className="text-xs text-muted-foreground">Статус</div>
               <div className="mt-1 text-sm font-semibold">{f.status}</div>
             </Card>
             <Card className="p-4">
-              <div className="text-xs text-muted-foreground">Confidence</div>
+              <div className="text-xs text-muted-foreground">Уверенность</div>
               <div className="mt-1 text-sm font-semibold">{Math.round(f.confidence * 100)}%</div>
             </Card>
             <Card className="p-4">
-              <div className="text-xs text-muted-foreground">Assignee</div>
+              <div className="text-xs text-muted-foreground">Ответственный</div>
               <div className="mt-1 text-sm font-semibold">{f.assigned_to}</div>
             </Card>
           </div>
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
             <div className="space-y-5 lg:col-span-4">
               <Card>
-                <h2 className="mb-2 text-sm font-semibold">Summary</h2>
+                <h2 className="mb-2 text-sm font-semibold">Краткое описание</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">{f.description}</p>
               </Card>
               <Card>
-                <h2 className="mb-2 text-sm font-semibold">Business Impact</h2>
+                <h2 className="mb-2 text-sm font-semibold">Бизнес-эффект</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">{f.business_impact}</p>
               </Card>
               <Card>
-                <h2 className="mb-2 text-sm font-semibold">Remediation</h2>
+                <h2 className="mb-2 text-sm font-semibold">Ремедиация</h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">{f.remediation}</p>
               </Card>
             </div>
             <div className="space-y-5 lg:col-span-8">
               <Card>
                 <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-sm font-semibold">Evidence timeline</h2>
+                  <h2 className="text-sm font-semibold">Лента evidence</h2>
                   <CheckCircle2 className="h-4 w-4 text-success" />
                 </div>
                 <div className="space-y-3">
@@ -115,7 +115,7 @@ function FindingDetail() {
                         <div className="text-sm font-semibold">{ev.title}</div>
                         <a href={evidenceDownloadUrl(ev.id)} className="text-xs text-primary">
                           <Download className="mr-1 inline h-3 w-3" />
-                          Download
+                          Скачать
                         </a>
                       </div>
                       <pre className="mt-2 overflow-auto rounded-md bg-muted p-3 text-xs">
@@ -126,8 +126,8 @@ function FindingDetail() {
                 </div>
               </Card>
               <Card>
-                <h2 className="mb-2 text-sm font-semibold">Suggested test</h2>
-                <pre className="overflow-auto rounded-md border border-border bg-muted p-3 text-xs">{`// Regression check\n// 1. Authenticate as regular user\n// 2. Request ${f.endpoint?.method ?? "GET"} ${f.endpoint?.path ?? "/"}\n// 3. Assert cross-user or admin-only access is denied by server-side policy`}</pre>
+                <h2 className="mb-2 text-sm font-semibold">Рекомендуемый тест</h2>
+                <pre className="overflow-auto rounded-md border border-border bg-muted p-3 text-xs">{`// Регрессионная проверка\n// 1. Войти под обычным пользователем\n// 2. Выполнить ${f.endpoint?.method ?? "GET"} ${f.endpoint?.path ?? "/"}\n// 3. Убедиться, что межпользовательский/админ-доступ запрещен серверной политикой`}</pre>
               </Card>
             </div>
           </div>

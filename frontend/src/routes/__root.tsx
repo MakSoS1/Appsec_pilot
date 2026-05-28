@@ -14,13 +14,13 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Страница не найдена</h2>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
           >
-            Go home
+            На главную
           </Link>
         </div>
       </div>
@@ -34,7 +34,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page did not load
+          Страница не загрузилась
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
         <button
@@ -44,7 +44,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           }}
           className="mt-6 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
         >
-          Try again
+          Повторить
         </button>
       </div>
     </div>
@@ -59,7 +59,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "AppSec Pilot" },
       {
         name: "description",
-        content: "Self-hosted AI AppSec platform for authorized local and staging validation.",
+        content:
+          "Self-hosted AI AppSec-платформа для авторизованной проверки локальных и тестовых сред.",
       },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
@@ -72,7 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <head>
         <HeadContent />
       </head>

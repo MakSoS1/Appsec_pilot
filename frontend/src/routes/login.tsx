@@ -33,7 +33,9 @@ function Login() {
           </div>
           <div>
             <h1 className="text-xl font-semibold">AppSec Pilot</h1>
-            <p className="text-sm text-muted-foreground">Authorized local AppSec validation</p>
+            <p className="text-sm text-muted-foreground">
+              Локальная авторизованная AppSec-валидация
+            </p>
           </div>
         </div>
         <form onSubmit={submit} className="space-y-4">
@@ -46,7 +48,7 @@ function Login() {
             />
           </label>
           <label className="block text-sm font-medium">
-            Password
+            Пароль
             <input
               type="password"
               value={password}
@@ -56,14 +58,14 @@ function Login() {
           </label>
           {error && <p className="text-sm text-critical">{error}</p>}
           <Button type="submit" variant="primary" className="w-full">
-            Sign in
+            Войти
           </Button>
           <Button type="button" variant="outline" className="w-full" onClick={() => void doLogin()}>
-            Demo mode
+            Демо-режим
           </Button>
         </form>
         <div className="mt-4 text-xs text-muted-foreground">
-          Version 0.1.0 · local model runtime · safe scope required
+          Версия 0.1.0 · локальный запуск модели · обязательный scope
         </div>
       </Card>
     </div>

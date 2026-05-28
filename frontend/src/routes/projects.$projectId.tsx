@@ -1,9 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PlayCircle, Plus } from "lucide-react";
 import { useState } from "react";
 import { AppLayout } from "@/components/app-layout";
+import { ScanTemplateDialog } from "@/components/scan-template-dialog";
 import { Button, Card, PageHeader, SectionTitle, SeverityBadge } from "@/components/ui-kit";
 import { api, Endpoint, Finding, Project, ScanRun, Target } from "@/lib/api";
+import { ScanTemplate } from "@/lib/scan-templates";
 import { useAsyncData } from "@/lib/use-api";
 
 export const Route = createFileRoute("/projects/$projectId")({ component: ProjectDetail });
@@ -12,6 +14,7 @@ const defaultScope = `project_name: "fastapi-vuln-demo"\nenvironment: "local_lab
 
 function ProjectDetail() {
   const { projectId } = Route.useParams();
+  const navigate = useNavigate();
   const { data, reload } = useAsyncData(async () => {
     const [project, targets, scans] = await Promise.all([
       api.get<Project>(`/api/projects/${projectId}`),
@@ -28,6 +31,8 @@ function ProjectDetail() {
     return { project, targets, scans, endpoints, findings };
   }, [projectId]);
   const [baseUrl, setBaseUrl] = useState("http://localhost:8008");
+  const [scanTargetId, setScanTargetId] = useState<string | null>(null);
+
   async function addTarget() {
     await api.post(`/api/projects/${projectId}/targets`, {
       type: "local_url",
@@ -37,14 +42,18 @@ function ProjectDetail() {
     });
     await reload();
   }
-  async function startScan(targetId?: string) {
-    await api.post(`/api/projects/${projectId}/scans`, {
-      target_id: targetId ?? data?.targets[0]?.id,
-      profile: "safe-active",
+  async function startScanFromTemplate(template: ScanTemplate) {
+    const scan = await api.post<ScanRun>(`/api/projects/${projectId}/scans`, {
+      target_id:
+        scanTargetId && scanTargetId !== "__no_target__" ? scanTargetId : data?.targets[0]?.id,
+      profile: template.profile,
       start_immediately: true,
     });
+    setScanTargetId(null);
     await reload();
+    await navigate({ to: "/scans/$id", params: { id: scan.id } });
   }
+
   return (
     <AppLayout>
       {data && (
@@ -56,18 +65,24 @@ function ProjectDetail() {
               <>
                 <Button variant="outline" onClick={() => void addTarget()}>
                   <Plus className="h-4 w-4" />
-                  Add target
+                  Добавить цель
                 </Button>
-                <Button variant="primary" onClick={() => void startScan()}>
+                <Button
+                  variant="primary"
+                  onClick={() => setScanTargetId(data.targets[0]?.id ?? "__no_target__")}
+                >
                   <PlayCircle className="h-4 w-4" />
-                  Start scan
+                  Запустить скан
                 </Button>
               </>
             }
           />
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
             <Card className="lg:col-span-4">
-              <SectionTitle title="Target setup" subtitle="Local URL, scope, and profile" />
+              <SectionTitle
+                title="Настройка цели"
+                subtitle="Local URL, scope и профиль сканирования"
+              />
               <label className="text-sm font-medium">
                 Base URL
                 <input
@@ -81,7 +96,7 @@ function ProjectDetail() {
               </pre>
             </Card>
             <Card className="lg:col-span-8">
-              <SectionTitle title="Targets" />
+              <SectionTitle title="Цели" />
               <div className="space-y-2">
                 {data.targets.map((t) => (
                   <div
@@ -94,15 +109,15 @@ function ProjectDetail() {
                         {t.type} · {t.base_url ?? t.repo_path ?? t.openapi_path}
                       </div>
                     </div>
-                    <Button variant="outline" onClick={() => void startScan(t.id)}>
-                      Scan
+                    <Button variant="outline" onClick={() => setScanTargetId(t.id)}>
+                      Скан
                     </Button>
                   </div>
                 ))}
               </div>
             </Card>
             <Card className="lg:col-span-6">
-              <SectionTitle title="Latest endpoints" />
+              <SectionTitle title="Последние endpoint'ы" />
               <div className="space-y-2">
                 {data.endpoints.map((e) => (
                   <div key={e.id} className="rounded-md border border-border p-2 text-sm">
@@ -113,7 +128,7 @@ function ProjectDetail() {
               </div>
             </Card>
             <Card className="lg:col-span-6">
-              <SectionTitle title="Latest findings" />
+              <SectionTitle title="Последние находки" />
               <div className="space-y-2">
                 {data.findings.map((f) => (
                   <div
@@ -127,6 +142,12 @@ function ProjectDetail() {
               </div>
             </Card>
           </div>
+          <ScanTemplateDialog
+            open={scanTargetId !== null}
+            title="Шаблоны сканирования"
+            onClose={() => setScanTargetId(null)}
+            onSelect={(template) => void startScanFromTemplate(template)}
+          />
         </>
       )}
     </AppLayout>

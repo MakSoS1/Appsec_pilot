@@ -1,6 +1,14 @@
 import { mockLogin, mockRequest } from "./mock-api";
 
-export const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8080";
+function resolveApiUrl() {
+  const explicit = import.meta.env.VITE_API_URL;
+  if (explicit) return explicit;
+  if (typeof window === "undefined") return "http://localhost:8080";
+  const { protocol, hostname } = window.location;
+  return `${protocol}//${hostname}:8080`;
+}
+
+export const API_URL = resolveApiUrl();
 export const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true";
 
 export type Project = {

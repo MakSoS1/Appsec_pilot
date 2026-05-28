@@ -11,7 +11,10 @@ function Runs() {
   const { data: scans } = useAsyncData<ScanRun[]>(() => api.get("/api/scans"), []);
   return (
     <AppLayout>
-      <PageHeader title="Agent Runs" description="Auditable timeline of every scan action." />
+      <PageHeader
+        title="Запуски агента"
+        description="Аудируемая лента всех действий сканирования."
+      />
       <Card className="p-0">
         <ul className="divide-y divide-border">
           {scans?.map((s) => (
@@ -25,16 +28,16 @@ function Runs() {
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-primary">{s.id}</div>
                   <div className="text-xs text-muted-foreground">
-                    {s.status} · {s.profile} · {s.total_endpoints} endpoints
+                    {s.status} · {s.profile} · {s.total_endpoints} endpoint'ов
                   </div>
                 </div>
                 <div className="text-right text-xs">
                   <div className="font-semibold">{s.total_findings}</div>
-                  <div className="text-muted-foreground">findings</div>
+                  <div className="text-muted-foreground">находок</div>
                 </div>
                 <div className="text-right text-xs">
                   <div className="font-semibold text-critical">{s.confirmed_findings}</div>
-                  <div className="text-muted-foreground">confirmed</div>
+                  <div className="text-muted-foreground">подтверждено</div>
                 </div>
               </Link>
             </li>

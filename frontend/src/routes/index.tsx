@@ -1,8 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Activity, Bug, CheckCircle2, Play, ShieldAlert, Timer } from "lucide-react";
+import { useState } from "react";
 import { AppLayout } from "@/components/app-layout";
+import { ScanTemplateDialog } from "@/components/scan-template-dialog";
 import { Button, Card, PageHeader, SectionTitle, SeverityBadge } from "@/components/ui-kit";
 import { api, Finding, Project, ScanRun } from "@/lib/api";
+import { ScanTemplate } from "@/lib/scan-templates";
 import { useAsyncData } from "@/lib/use-api";
 
 export const Route = createFileRoute("/")({ component: Overview });
@@ -39,50 +42,55 @@ function Metric({
 }
 
 function Overview() {
+  const navigate = useNavigate();
   const { data, loading, reload } = useAsyncData<OverviewData>(() => api.get("/api/overview"), []);
-  async function startScan() {
+  const [templateOpen, setTemplateOpen] = useState(false);
+
+  async function startScanFromTemplate(template: ScanTemplate) {
     const project = data?.projects[0];
     if (!project) return;
-    await api.post(`/api/projects/${project.id}/scans`, {
-      profile: "safe-active",
+    const scan = await api.post<ScanRun>(`/api/projects/${project.id}/scans`, {
+      profile: template.profile,
       start_immediately: true,
     });
+    setTemplateOpen(false);
     await reload();
+    await navigate({ to: "/scans/$id", params: { id: scan.id } });
   }
   return (
     <AppLayout>
       <PageHeader
-        title="Security Overview"
-        description="Live posture, validated risks, and agent activity across authorized targets."
+        title="Обзор безопасности"
+        description="Текущая картина рисков, верифицированные находки и активность агента."
         actions={
-          <Button variant="primary" onClick={() => void startScan()}>
+          <Button variant="primary" onClick={() => setTemplateOpen(true)}>
             <Play className="h-4 w-4" />
-            New scan
+            Новый скан
           </Button>
         }
       />
-      {loading && <Card>Loading API data...</Card>}
+      {loading && <Card>Загрузка данных...</Card>}
       {data && (
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
             <Metric
-              label="Active projects"
+              label="Активные проекты"
               value={data.metrics.active_projects ?? 0}
               icon={Activity}
             />
-            <Metric label="Open findings" value={data.metrics.open_findings ?? 0} icon={Bug} />
+            <Metric label="Открытые находки" value={data.metrics.open_findings ?? 0} icon={Bug} />
             <Metric
-              label="Confirmed"
+              label="Подтверждено"
               value={data.metrics.confirmed_findings ?? 0}
               icon={ShieldAlert}
             />
             <Metric
-              label="Critical assets"
+              label="Критичные активы"
               value={data.metrics.critical_assets ?? 0}
               icon={CheckCircle2}
             />
             <Metric
-              label="Mean validation"
+              label="Среднее время верификации"
               value={data.metrics.mean_time_to_validate ?? "n/a"}
               icon={Timer}
             />
@@ -90,8 +98,8 @@ function Overview() {
           <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <Card className="lg:col-span-2">
               <SectionTitle
-                title="Latest findings"
-                subtitle="Verifier-backed evidence from recent scans"
+                title="Последние находки"
+                subtitle="Подтвержденные данные из последних запусков"
               />
               <div className="space-y-3">
                 {data.findings.map((f) => (
@@ -113,7 +121,7 @@ function Overview() {
               </div>
             </Card>
             <Card>
-              <SectionTitle title="Recent scans" subtitle="Agent lifecycle" />
+              <SectionTitle title="Последние сканы" subtitle="Этапы пайплайна" />
               <div className="space-y-3">
                 {data.scans.map((s) => (
                   <Link
@@ -124,13 +132,19 @@ function Overview() {
                   >
                     <div className="text-sm font-semibold">{s.id}</div>
                     <div className="text-xs text-muted-foreground">
-                      {s.status} · {s.total_findings} findings
+                      {s.status} · {s.total_findings} находок
                     </div>
                   </Link>
                 ))}
               </div>
             </Card>
           </div>
+          <ScanTemplateDialog
+            open={templateOpen}
+            title="Шаблоны сканирования"
+            onClose={() => setTemplateOpen(false)}
+            onSelect={(template) => void startScanFromTemplate(template)}
+          />
         </>
       )}
     </AppLayout>

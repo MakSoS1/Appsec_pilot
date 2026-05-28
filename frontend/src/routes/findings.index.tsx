@@ -12,12 +12,12 @@ function Findings() {
   return (
     <AppLayout>
       <PageHeader
-        title="Findings"
-        description="Confirmed and review-needed findings with evidence."
+        title="Находки"
+        description="Подтвержденные и требующие ревью находки с evidence."
         actions={
           <Button variant="outline">
             <Filter className="h-4 w-4" />
-            Filters
+            Фильтры
           </Button>
         }
       />
@@ -25,11 +25,11 @@ function Findings() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
-              <th className="px-4 py-3">Severity</th>
-              <th>Title</th>
+              <th className="px-4 py-3">Критичность</th>
+              <th>Название</th>
               <th>Endpoint</th>
-              <th>Status</th>
-              <th>Confidence</th>
+              <th>Статус</th>
+              <th>Уверенность</th>
               <th>CWE</th>
             </tr>
           </thead>

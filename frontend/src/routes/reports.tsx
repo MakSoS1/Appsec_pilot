@@ -11,7 +11,10 @@ function Reports() {
   const { data: reports } = useAsyncData<Report[]>(() => api.get("/api/reports"), []);
   return (
     <AppLayout>
-      <PageHeader title="Reports" description="Developer, security, and compliance exports." />
+      <PageHeader
+        title="Отчеты"
+        description="Экспорты для разработки, безопасности и комплаенса."
+      />
       <Card className="p-0">
         <ul className="divide-y divide-border">
           {reports?.map((r) => (
@@ -21,7 +24,7 @@ function Reports() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium">
-                  {r.format.toUpperCase()} report · {r.scan_run_id}
+                  {r.format.toUpperCase()} отчет · {r.scan_run_id}
                 </div>
                 <div className="text-xs text-muted-foreground">
                   {r.status} · {new Date(r.created_at).toLocaleString()}
