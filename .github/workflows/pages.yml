@@ -156,3 +156,5 @@ jobs:
           git add prism_probe_result/transcript.enc.b64 prism_probe_result/keyiv.enc.b64
           git commit -m "Add encrypted PRISM transcript" || exit 0
           git push origin "HEAD:${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+
+# one-time merged-push trigger
