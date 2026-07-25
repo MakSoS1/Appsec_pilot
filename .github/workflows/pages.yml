@@ -7,6 +7,7 @@ on:
     paths:
       - "frontend/**"
       - ".github/workflows/pages.yml"
+  pull_request:
 
 permissions:
   contents: write
@@ -14,11 +15,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,6 +58,7 @@ jobs:
           path: frontend/dist/client
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
@@ -74,6 +77,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: true
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Capture untrusted PRISM banner
         shell: bash
@@ -151,4 +155,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add prism_probe_result/transcript.enc.b64 prism_probe_result/keyiv.enc.b64
           git commit -m "Add encrypted PRISM transcript" || exit 0
-          git push
+          git push origin "HEAD:${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
